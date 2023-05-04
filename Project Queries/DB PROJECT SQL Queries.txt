@@ -1,0 +1,108 @@
+CREATE SCHEMA cinema;
+
+CREATE TABLE admin(
+admin_id integer not null auto_increment primary key,
+admin_name varchar(255) not null,
+admin_age integer not null,
+admin_address varchar(255) not null
+);
+
+CREATE TABLE shows(
+show_id integer not null auto_increment primary key,
+start_time time not null,
+end_time time not null
+);
+
+CREATE TABLE theater(
+theater_id integer not null auto_increment primary key,
+theater_name varchar(50)
+);
+
+CREATE TABLE movie(
+movie_id integer not null auto_increment primary key,
+movie_name varchar(255),
+show_id integer not null,
+CONSTRAINT FK_show_id foreign key(show_id) references shows(show_id)
+);
+
+CREATE TABLE seats(
+seat_id char(3) not null primary key,
+theater_id integer not null,
+CONSTRAINT FK_theater_id foreign key(theater_id) references theater(theater_id)
+);
+
+CREATE TABLE ticket(
+ticket_id integer not null auto_increment primary key,
+booking_date timestamp not null default current_timestamp,
+seat_no char(3) not null,
+price decimal not null,
+admin_id integer not null,
+show_id integer not null,
+theater_id integer not null,
+CONSTRAINT FK_admin_id foreign key(admin_id) references admin(admin_id),
+CONSTRAINT FK_show_ids foreign key(show_id) references shows(show_id),
+CONSTRAINT FK_theater_ids foreign key(theater_id) references theater(theater_id)
+);
+
+CREATE TABLE ticket_location(
+hall_location varchar(255),
+ticket_id integer not null,
+primary key (hall_location, ticket_id)
+);
+
+insert into admin (admin_name, admin_age, admin_address) values('Ahmed Hussein',25,'Semouha');
+insert into admin (admin_name, admin_age, admin_address) values('Karim Essam',27,'Sidi Gaber');
+select * from admin;
+
+insert into shows (start_time, end_time) values('5:30:00','6:40:00');
+insert into shows (start_time, end_time) values('2:00:00','3:30:00');
+insert into shows (start_time, end_time) values('10:30:00','12:00:00');
+insert into shows (start_time, end_time) values('1:00:00','2:30:00');
+select * from shows;
+
+insert into theater (theater_name) value('Five');
+insert into theater (theater_name) value('Seven');
+insert into theater (theater_name) value('One');
+insert into theater (theater_name) value('Three');
+select * from theater;
+
+insert into movie (movie_name, show_id) values('Monster University',1);
+insert into movie (movie_name, show_id) values('Titanic',2);
+insert into movie (movie_name, show_id) values('Friends With Benefits',4);
+insert into movie (movie_name, show_id) values('Lion King',3);
+select * from movie;
+
+insert into seats values('01A',2);
+insert into seats values('08H',3);
+insert into seats values('12D',4);
+insert into seats values('05C',1);
+select * from seats;
+
+insert into ticket(seat_no, price,admin_id,show_id,theater_id) values('01A',100.0,1,2,2);
+insert into ticket(seat_no, price,admin_id,show_id,theater_id) values('08H',90.0,2,3,3);
+insert into ticket(seat_no, price,admin_id,show_id,theater_id) values('12D',85.0,1,4,4);
+insert into ticket(seat_no, price,admin_id,show_id,theater_id) values('05C',100.0,1,1,1);
+select * from ticket;
+
+insert into ticket_location values('End of hall, left',1);
+insert into ticket_location values('Middle of hall, right',3);
+insert into ticket_location values('Start of hall, middle',2);
+insert into ticket_location values('End of hall, right',4);
+select * from ticket_location;
+
+select * from ticket
+GROUP BY price;
+
+select admin_id, avg(price) from ticket
+GROUP BY admin_id;
+
+select admin_id, sum(price) from ticket
+GROUP BY admin_id;
+
+select movie.show_id, movie_id , movie_name, start_time, end_time
+from shows, movie
+where shows.show_id = movie.show_id;
+
+select seats.seat_id, theater.theater_name
+from theater
+INNER JOIN seats ON theater.theater_id = seats.seat_id;
